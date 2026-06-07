@@ -4,8 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Spesial Untukmu ✨</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome (Ikon) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Inter:wght@300;400;600;800&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
     
     <style>
@@ -132,11 +135,11 @@
             Ada Paket Spesial! 🎁
         </h1>
         <p class="text-sm md:text-base text-gray-300 mb-8 max-w-xs font-light">
-            Halo <span class="partner-name font-bold text-rose-300">Kamu</span>, seseorang telah mengirimkan hadiah rahasia khusus untukmu. Ketuk untuk membuka...
+            Halo <span class="font-bold text-rose-300">Kamu</span>, seseorang telah mengirimkan hadiah rahasia khusus untukmu. Ketuk untuk membuka...
         </p>
 
-        <!-- KOTAK KADO SVG DENGAN ANIMASI MEMANTUL -->
-        <div id="giftBox" class="gift-bounce cursor-pointer relative w-56 h-56 transition-all duration-500 transform hover:scale-110 active:scale-95 flex items-center justify-center">
+        <!-- KOTAK KADO DENGAN LOGIKA KLIK YANG SUDAH DIPERBAIKI -->
+        <div id="giftBox" class="gift-bounce cursor-pointer relative w-56 h-56 transition-all duration-500 transform hover:scale-110 active:scale-95 flex items-center justify-center" onclick="openGift()">
             <svg class="w-full h-full filter drop-shadow-[0_15px_30px_rgba(244,63,94,0.4)]" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <!-- Kotak Kado -->
                 <rect x="40" y="70" width="120" height="100" rx="10" fill="#f43f5e" />
@@ -159,7 +162,7 @@
         </p>
     </div>
 
-    <!-- MAIN PAGE: Konten Utama yang Indah & Komplit -->
+    <!-- MAIN PAGE: Konten Utama (Bisa discroll setelah kado terbuka) -->
     <div id="mainPage" class="hidden relative z-10 w-full max-w-2xl px-4 py-8 md:py-16 overflow-y-auto max-h-screen scroll-smooth">
         
         <!-- SECTION 1: Pembuka Romantis -->
@@ -293,7 +296,7 @@
                 <!-- Timeline Content -->
                 <div id="timelineContainer" class="transition-all duration-500">
                     <div class="flex items-center gap-3 text-rose-400 mb-4">
-                        <span class="text-2xl" id="timelineIcon"><i class="fas fa-star-and-crescent"></i></span>
+                        <span class="text-2xl" id="timelineIcon"><i class="fas fa-star"></i></span>
                         <h4 class="font-bold text-lg text-rose-200" id="timelineTitle">Awal Cerita Kita</h4>
                     </div>
                     <p class="text-sm md:text-base text-gray-300 leading-relaxed font-light italic" id="timelineDesc">
@@ -337,7 +340,7 @@
                     <span class="absolute -top-4 -right-12 bg-emerald-500 text-slate-950 text-[10px] font-extrabold px-3 py-1 rounded-full animate-bounce shadow-md">Siram Aku!</span>
                 </div>
 
-                <!-- Efek air menetes (hidden by default, animated by JS) -->
+                <!-- Efek air menetes -->
                 <div id="waterDrops" class="absolute top-[130px] flex gap-2 hidden z-10">
                     <div class="w-1.5 h-5 bg-sky-400 rounded-full animate-bounce"></div>
                     <div class="w-1.5 h-5 bg-sky-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
@@ -349,11 +352,9 @@
                     <!-- Bunga 1 -->
                     <div class="flex flex-col items-center">
                         <div class="h-32 flex items-end justify-center">
-                            <!-- Bunga Tulip SVG yang bisa tumbuh -->
                             <svg id="flower1" class="w-16 h-0 transition-all duration-1000 ease-out origin-bottom" viewBox="0 0 100 150" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M50 150V80" stroke="#10b981" stroke-width="6" stroke-linecap="round"/>
                                 <path d="M50 110Q30 100 35 90Q40 80 50 100" stroke="#10b981" stroke-width="4" fill="#10b981"/>
-                                <!-- Kelopak Bunga Tulip -->
                                 <path d="M50 80C30 70 30 40 50 30C70 40 70 70 50 80Z" fill="#f43f5e"/>
                                 <path d="M50 80C40 60 40 45 50 35C60 45 60 60 50 80Z" fill="#fda4af"/>
                             </svg>
@@ -366,13 +367,10 @@
                     <!-- Bunga 2 -->
                     <div class="flex flex-col items-center">
                         <div class="h-32 flex items-end justify-center">
-                            <!-- Bunga Matahari SVG -->
                             <svg id="flower2" class="w-16 h-0 transition-all duration-1000 ease-out origin-bottom" viewBox="0 0 100 150" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M50 150V70" stroke="#10b981" stroke-width="6" stroke-linecap="round"/>
-                                <!-- Kelopak Matahari melingkar -->
                                 <circle cx="50" cy="70" r="25" fill="#eab308"/>
                                 <circle cx="50" cy="70" r="14" fill="#78350f"/>
-                                <!-- Daun -->
                                 <path d="M50 120Q70 110 65 100Q60 90 50 110" stroke="#10b981" stroke-width="4" fill="#10b981"/>
                             </svg>
                         </div>
@@ -384,10 +382,8 @@
                     <!-- Bunga 3 -->
                     <div class="flex flex-col items-center">
                         <div class="h-32 flex items-end justify-center">
-                            <!-- Bunga Sakura/Lily SVG -->
                             <svg id="flower3" class="w-16 h-0 transition-all duration-1000 ease-out origin-bottom" viewBox="0 0 100 150" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M50 150V75" stroke="#10b981" stroke-width="6" stroke-linecap="round"/>
-                                <!-- Kelopak Sakura -->
                                 <circle cx="50" cy="75" r="12" fill="#f472b6"/>
                                 <circle cx="36" cy="75" r="10" fill="#f472b6"/>
                                 <circle cx="64" cy="75" r="10" fill="#f472b6"/>
@@ -435,28 +431,27 @@
                 <p class="text-xs text-gray-400 mt-2">Geser atau sentuh foto teratas untuk membalik tumpukan!</p>
             </div>
 
-            <!-- Tumpukan Polaroid dengan Event Handlers Gestur -->
+            <!-- Tumpukan Polaroid -->
             <div class="relative w-72 h-96 mx-auto flex items-center justify-center" id="polaroidContainer">
-                
                 <!-- Foto 1 (Teratas) -->
-                <div class="polaroid-card absolute w-64 bg-white p-4 pb-8 text-slate-800 shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-sm transform rotate-[-4deg] hover:rotate-0 transition-all duration-500 cursor-grab active:cursor-grabbing border border-gray-100 z-30" onclick="swipePolaroid(this)">
-                    <img class="w-full h-56 object-cover rounded-sm mb-4 bg-pink-100 pointer-events-none" src="https://placehold.co/400x400/ffe4e6/e11d48?text=Semestaku+%E2%9C%A8" alt="Foto Cantik">
+                <div class="polaroid-card absolute w-64 bg-white p-4 pb-8 text-slate-800 shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-sm transform rotate-[-4deg] hover:rotate-0 transition-all duration-500 cursor-pointer border border-gray-100 z-30" onclick="swipePolaroid(this)">
+                    <img class="w-full h-56 object-cover rounded-sm mb-4 bg-pink-100 pointer-events-none" src="https://images.unsplash.com/photo-1518199266791-5375a83190b7?q=80&w=400&auto=format&fit=crop" alt="Foto Cantik">
                     <div class="text-center font-romantis text-3xl text-rose-600">
                         Kamu yang memikat hati...
                     </div>
                 </div>
 
                 <!-- Foto 2 (Tengah) -->
-                <div class="polaroid-card absolute w-64 bg-white p-4 pb-8 text-slate-800 shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-sm transform rotate-[3deg] hover:rotate-0 transition-all duration-500 cursor-grab active:cursor-grabbing border border-gray-100 z-20" onclick="swipePolaroid(this)">
-                    <img class="w-full h-56 object-cover rounded-sm mb-4 bg-rose-100 pointer-events-none" src="https://placehold.co/400x400/fce7f3/db2777?text=Tawa+Kita+%F0%9F%92%96" alt="Foto Kita">
+                <div class="polaroid-card absolute w-64 bg-white p-4 pb-8 text-slate-800 shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-sm transform rotate-[3deg] hover:rotate-0 transition-all duration-500 cursor-pointer border border-gray-100 z-20" onclick="swipePolaroid(this)">
+                    <img class="w-full h-56 object-cover rounded-sm mb-4 bg-rose-100 pointer-events-none" src="https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?q=80&w=400&auto=format&fit=crop" alt="Foto Kita">
                     <div class="text-center font-romantis text-3xl text-pink-600">
                         Saat tawa kita melebur utuh.
                     </div>
                 </div>
 
                 <!-- Foto 3 (Terbawah) -->
-                <div class="polaroid-card absolute w-64 bg-white p-4 pb-8 text-slate-800 shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-sm transform rotate-[-2deg] hover:rotate-0 transition-all duration-500 cursor-grab active:cursor-grabbing border border-gray-100 z-10" onclick="swipePolaroid(this)">
-                    <img class="w-full h-56 object-cover rounded-sm mb-4 bg-violet-100 pointer-events-none" src="https://placehold.co/400x400/ede9fe/7c3aed?text=Hari+Esok+%F0%9F%8E%A1" alt="Foto Masa Depan">
+                <div class="polaroid-card absolute w-64 bg-white p-4 pb-8 text-slate-800 shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-sm transform rotate-[-2deg] hover:rotate-0 transition-all duration-500 cursor-pointer border border-gray-100 z-10" onclick="swipePolaroid(this)">
+                    <img class="w-full h-56 object-cover rounded-sm mb-4 bg-violet-100 pointer-events-none" src="https://images.unsplash.com/photo-1531747118685-ca8fa6e08806?q=80&w=400&auto=format&fit=crop" alt="Foto Masa Depan">
                     <div class="text-center font-romantis text-3xl text-violet-600">
                         Bahagia melangkah selamanya.
                     </div>
@@ -466,5 +461,291 @@
 
     </div>
 
+    <!-- LOGIKA JAVASCRIPT UTAMA (Sudah Ditambahkan Lengkap & Diperbaiki) -->
+    <script>
+        // 1. Inisialisasi Audio Latar Belakang (Menggunakan Audio Resmi/Stabil Bebas Hak Cipta)
+        const bgMusic = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3');
+        bgMusic.loop = true;
+        bgMusic.volume = 0.5;
+        let isMusicPlaying = false;
+
+        // 2. Kontrol Musik
+        const musicController = document.getElementById('musicController');
+        const playMusicBtn = document.getElementById('playMusicBtn');
+        const musicIcon = document.getElementById('musicIcon');
+        const bars = [document.getElementById('b1'), document.getElementById('b2'), document.getElementById('b3'), document.getElementById('b4')];
+        let visualizerInterval;
+
+        function startVisualizer() {
+            visualizerInterval = setInterval(() => {
+                bars.forEach(bar => {
+                    const height = Math.floor(Math.random() * 14) + 4;
+                    bar.style.height = `${heightpx}`;
+                });
+            }, 150);
+        }
+
+        function stopVisualizer() {
+            clearInterval(visualizerInterval);
+            bars.forEach(bar => bar.style.height = '4px');
+        }
+
+        playMusicBtn.addEventListener('click', () => {
+            if (isMusicPlaying) {
+                bgMusic.pause();
+                musicIcon.className = 'fas fa-play text-sm';
+                stopVisualizer();
+            } else {
+                bgMusic.play().catch(e => console.log("Izin audio diperlukan"));
+                musicIcon.className = 'fas fa-music text-sm animate-bounce';
+                startVisualizer();
+            }
+            isMusicPlaying = !isMusicPlaying;
+        });
+
+        // 3. Logika Membuka Kado (Fungsi Utama yang Tadi Hilang)
+        function openGift() {
+            // Sembunyikan halaman intro dengan efek pudar
+            const introPage = document.getElementById('introPage');
+            introPage.style.opacity = '0';
+            introPage.style.transform = 'scale(0.8)';
+            
+            setTimeout(() => {
+                introPage.classList.add('hidden');
+                
+                // Tampilkan konten utama dan pengontrol musik
+                const mainPage = document.getElementById('mainPage');
+                mainPage.classList.remove('hidden');
+                musicController.classList.remove('hidden');
+                
+                // Biarkan body bisa di-scroll
+                document.body.style.overflow = 'auto';
+                
+                // Putar musik otomatis jika diizinkan browser
+                bgMusic.play().then(() => {
+                    isMusicPlaying = true;
+                    startVisualizer();
+                }).catch(() => {
+                    musicIcon.className = 'fas fa-play text-sm';
+                });
+
+                // Mulai efek mesin ketik otomatis
+                startTypingEffects();
+            }, 1000);
+        }
+
+        // 4. Efek Mesin Ketik (Typing Effect)
+        function startTypingEffects() {
+            const titleTarget = document.getElementById('typingTitle');
+            const textTarget = document.getElementById('typingText');
+            
+            const titleText = "Terima Kasih Sudah Hadir... ✨";
+            const bodyText = "Di dalam ruang waktu yang fana ini, mengenalmu adalah takdir (ketetapan alam) paling indah yang pernah kutemui. Kamu bukan sekadar nama, melainkan rumah ternyaman tempat segala lelahku luruh habis tak bersisa.";
+
+            let titleIdx = 0;
+            let bodyIdx = 0;
+
+            function typeTitle() {
+                if (titleIdx < titleText.length) {
+                    titleTarget.innerHTML += titleText.charAt(titleIdx);
+                    titleIdx++;
+                    setTimeout(typeTitle, 60);
+                } else {
+                    setTimeout(typeBody, 500);
+                }
+            }
+
+            function typeBody() {
+                if (bodyIdx < bodyText.length) {
+                    textTarget.innerHTML += bodyText.charAt(bodyIdx);
+                    bodyIdx++;
+                    setTimeout(typeBody, 40);
+                }
+            }
+
+            typeTitle();
+        }
+
+        // 5. Logika Kartu Alasan Cinta (Flip Card)
+        function toggleFlip(card) {
+            card.classList.toggle('flipped');
+        }
+
+        // 6. Logika Alur Kenangan (Timeline Carousel)
+        const timelineData = [
+            {
+                title: "Awal Cerita Kita",
+                desc: '"Semesta punya cara yang tidak terduga untuk mempertemukan kita. Saat pertama kali mengenalmu, ada getaran hangat yang membisikkan bahwa kamulah pelengkap jiwaku."',
+                icon: '<i class="fas fa-star"></i>'
+            },
+            {
+                title: "Melewati Badai Bersama",
+                desc: '"Tidak selalu mulus, namun setiap rintangan dan kesalahpahaman justru mendewasakan kita. Genggaman tanganmu membuat segalanya terasa jauh lebih ringan."',
+                icon: '<i class="fas fa-cloud-showers-water"></i>'
+            },
+            {
+                title: "Masa Depan Cerah",
+                desc: '"Kini, aku tidak ingin melangkah sendirian lagi. Mari kita susun mimpi-mimpi besar kita dan mewujudkannya bersama sampai rambut kita memutih."',
+                icon: '<i class="fas fa-infinity"></i>'
+            }
+        ];
+        
+        let currentTimelineIdx = 0;
+        function updateTimeline() {
+            const container = document.getElementById('timelineContainer');
+            const title = document.getElementById('timelineTitle');
+            const desc = document.getElementById('timelineDesc');
+            const icon = document.getElementById('timelineIcon');
+            const dots = document.getElementById('timelineDots').children;
+
+            container.style.opacity = '0';
+            container.style.transform = 'translateX(-20px)';
+
+            setTimeout(() => {
+                title.innerText = timelineData[currentTimelineIdx].title;
+                desc.innerText = timelineData[currentTimelineIdx].desc;
+                icon.innerHTML = timelineData[currentTimelineIdx].icon;
+
+                // Update dots indicator
+                for (let i = 0; i < dots.length; i++) {
+                    if (i === currentTimelineIdx) {
+                        dots[i].className = "w-2.5 h-2.5 rounded-full bg-rose-500 transition-all duration-300";
+                    } else {
+                        dots[i].className = "w-2.5 h-2.5 rounded-full bg-rose-500/20 transition-all duration-300";
+                    }
+                }
+
+                container.style.opacity = '1';
+                container.style.transform = 'translateX(0)';
+            }, 300);
+        }
+
+        function nextTimeline() {
+            currentTimelineIdx = (currentTimelineIdx + 1) % timelineData.length;
+            updateTimeline();
+        }
+
+        function prevTimeline() {
+            currentTimelineIdx = (currentTimelineIdx - 1 + timelineData.length) % timelineData.length;
+            updateTimeline();
+        }
+
+        // 7. Logika Taman Bunga Cinta Interaktif
+        let waterCount = 0;
+        function waterPlants() {
+            const waterDrops = document.getElementById('waterDrops');
+            const wateringCan = document.getElementById('wateringCan');
+            
+            waterDrops.classList.remove('hidden');
+            wateringCan.style.transform = 'scale(1.1) rotate(-35deg)';
+            
+            setTimeout(() => {
+                waterDrops.classList.add('hidden');
+                wateringCan.style.transform = 'none';
+                
+                waterCount++;
+                const f1 = document.getElementById('flower1');
+                const f2 = document.getElementById('flower2');
+                const f3 = document.getElementById('flower3');
+                const status = document.getElementById('gardenStatus');
+
+                if (waterCount === 1) {
+                    f1.style.height = '70px';
+                    status.innerText = "Benih cinta mulai bertunas... 🌱";
+                } else if (waterCount === 2) {
+                    f2.style.height = '80px';
+                    status.innerText = "Bunga-bunga mulai bermekaran dengan anggun! 🌿";
+                } else if (waterCount >= 3) {
+                    f3.style.height = '85px';
+                    status.innerHTML = "Taman cinta kita telah mekar seutuhnya! Sangat cantik! 🌸✨";
+                    status.className = "mt-6 text-sm font-semibold text-rose-400 animate-pulse text-center";
+                }
+            }, 1200);
+        }
+
+        // 8. Logika Melempar Kotak Harapan
+        function throwWish() {
+            const input = document.getElementById('wishingText');
+            const status = document.getElementById('wishStatus');
+            
+            if (input.value.trim() !== "") {
+                status.classList.remove('hidden');
+                input.value = "";
+                setTimeout(() => {
+                    status.classList.add('hidden');
+                }, 4000);
+            }
+        }
+
+        // 9. Logika Menggeser Album Foto Polaroid
+        let zIndexTop = 30;
+        function swipePolaroid(card) {
+            card.style.transform = 'translateX(350px) rotate(20deg) scale(0.95)';
+            card.style.opacity = '0';
+            
+            setTimeout(() => {
+                zIndexTop--;
+                card.style.zIndex = zIndexTop - 20;
+                card.style.transform = 'translateX(0) rotate(' + (Math.random() * 8 - 4) + 'deg) scale(1)';
+                card.style.opacity = '1';
+            }, 600);
+        }
+
+        // 10. Latar Belakang Efek Partikel Berkilau (Canvas)
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2.5 + 0.5;
+                this.speedX = Math.random() * 0.4 - 0.2;
+                this.speedY = Math.random() * -0.6 - 0.1;
+                this.opacity = Math.random() * 0.5 + 0.2;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.y < 0) {
+                    this.y = canvas.height;
+                    this.x = Math.random() * canvas.width;
+                }
+            }
+            draw() {
+                ctx.fillStyle = `rgba(244, 63, 94, ${this.opacity})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            for (let i = 0; i < 65; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animateParticles);
+        }
+
+        initParticles();
+        animateParticles();
+    </script>
 </body>
 </html>
