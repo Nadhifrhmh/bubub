@@ -12,7 +12,7 @@
         body {
             font-family: 'Inter', sans-serif;
             overflow-x: hidden;
-            background: radial-gradient(circle at center, #1e0b25 0%, #09030c 100%);
+            background: radial-gradient(circle at center, #1f082e 0%, #07020a 100%);
             color: #fff;
             user-select: none;
             -webkit-user-select: none;
@@ -24,33 +24,31 @@
             font-family: 'Playfair Display', serif;
         }
         
-        /* Efek Berkilau Premium (Glassmorphism & Neon Glow) */
         .glassmorphism {
-            background: rgba(255, 255, 255, 0.04);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px rgba(255, 255, 255, 0.1) solid;
-            box-shadow: 0 10px 40px 0 rgba(244, 63, 94, 0.08), inset 0 1px 1px rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px rgba(255, 255, 255, 0.08) solid;
+            box-shadow: 0 15px 50px 0 rgba(244, 63, 94, 0.1), inset 0 1px 2px rgba(255,255,255,0.05);
         }
 
         .glow-button {
-            box-shadow: 0 0 15px rgba(244, 63, 94, 0.4);
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 0 20px rgba(244, 63, 94, 0.4);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
         .glow-button:hover {
-            box-shadow: 0 0 25px rgba(244, 63, 94, 0.8);
+            box-shadow: 0 0 35px rgba(244, 63, 94, 0.9);
+            transform: scale(1.03);
         }
 
-        /* Animasi Kado Memantul */
         @keyframes bounce-custom {
             0%, 100% { transform: translateY(0) scale(1); }
-            50% { transform: translateY(-20px) scale(1.05); }
+            50% { transform: translateY(-25px) scale(1.08); }
         }
         .gift-bounce {
-            animation: bounce-custom 3s infinite ease-in-out;
+            animation: bounce-custom 2.5s infinite ease-in-out;
         }
 
-        /* Kartu Bolak Balik (Card Flip) */
         .flip-card {
             background-color: transparent;
             perspective: 1000px;
@@ -78,19 +76,17 @@
             transform: rotateY(180deg);
         }
 
-        /* Kustom scrollbar lembut */
         ::-webkit-scrollbar {
             width: 8px;
         }
         ::-webkit-scrollbar-track {
-            background: rgba(9, 3, 12, 0.95);
+            background: rgba(7, 2, 10, 0.95);
         }
         ::-webkit-scrollbar-thumb {
             background: linear-gradient(to bottom, #f43f5e, #ec4899);
             border-radius: 10px;
         }
 
-        /* Wave visualizer */
         .bar {
             width: 3px;
             height: 4px;
@@ -98,21 +94,43 @@
             display: inline-block;
             margin: 0 1px;
             border-radius: 3px;
-            transition: height 0.1s ease;
+        }
+
+        .floating-heart {
+            position: absolute;
+            pointer-events: none;
+            animation: floatUp 4s linear forwards;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(100vh) scale(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-10vh) scale(1.5) rotate(360deg);
+                opacity: 0;
+            }
         }
     </style>
 </head>
 <body class="min-h-screen relative flex items-center justify-center overflow-hidden">
 
     <canvas id="particleCanvas" class="absolute inset-0 w-full h-full pointer-events-none z-0"></canvas>
+    <div id="heartContainer" class="absolute inset-0 pointer-events-none z-0"></div>
 
-    <!-- FLOATING MUSIC CONTROLLER (Muncul setelah kado dibuka) -->
+    <!-- AUDIO ELEMENT (Ganti URL musik di bawah ini jika ingin mengganti lagu asli) -->
+    <audio id="romanticMusic" loop>
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- FLOATING MUSIC CONTROLLER -->
     <div id="musicController" class="fixed top-4 right-4 z-50 hidden glassmorphism px-4 py-2 rounded-full flex items-center gap-3 cursor-pointer transition-all duration-300 hover:scale-105 text-rose-400 border border-rose-500/30">
         <div id="visualizer" class="flex items-end h-4 mr-1">
-            <span class="bar" id="b1"></span>
-            <span class="bar" id="b2"></span>
-            <span class="bar" id="b3"></span>
-            <span class="bar" id="b4"></span>
+            <span class="bar animate-pulse h-3"></span>
+            <span class="bar animate-pulse h-4" style="animation-delay: 0.2s"></span>
+            <span class="bar animate-pulse h-2" style="animation-delay: 0.4s"></span>
+            <span class="bar animate-pulse h-4" style="animation-delay: 0.1s"></span>
         </div>
         <button id="playMusicBtn" class="focus:outline-none flex items-center justify-center w-8 h-8 rounded-full bg-rose-500/20">
             <i id="musicIcon" class="fas fa-music text-sm animate-bounce"></i>
@@ -120,190 +138,154 @@
         <span class="text-xs font-semibold pr-1 hidden sm:inline">Harmoni Cinta</span>
     </div>
 
-    <!-- ONBOARDING PAGE: Meminta Nama untuk Personalisasi -->
-    <div id="onboardingPage" class="relative z-10 flex flex-col items-center justify-center text-center p-6 max-w-md w-full transition-all duration-1000">
-        <div class="glassmorphism p-8 rounded-3xl w-full border border-rose-500/20 shadow-[0_0_50px_rgba(244,63,94,0.1)]">
-            <span class="text-rose-500 text-5xl mb-4 block animate-pulse">
-                <i class="fas fa-heart-pulse"></i>
-            </span>
-            <h1 class="text-2xl md:text-3xl font-elegant font-bold mb-2 tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-rose-300 via-pink-400 to-rose-200">
-                Sebelum Memulai...
-            </h1>
-            <p class="text-xs md:text-sm text-gray-400 mb-6 font-light">
-                Masukkan namamu dan nama pasanganmu agar kejutan ini terasa lebih dekat di hati.
-            </p>
-
-            <div class="space-y-4 text-left">
-                <div>
-                    <label class="block text-[11px] text-rose-400 font-bold uppercase tracking-widest mb-1 pl-1">Namamu</label>
-                    <input type="text" id="senderName" placeholder="Contoh: Sayangku" class="w-full bg-slate-950/60 border border-rose-500/20 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-rose-500 text-white transition-all">
-                </div>
-                <div>
-                    <label class="block text-[11px] text-rose-400 font-bold uppercase tracking-widest mb-1 pl-1">Nama Pasanganmu (Dia)</label>
-                    <input type="text" id="receiverName" placeholder="Contoh: Manisku" class="w-full bg-slate-950/60 border border-rose-500/20 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-rose-500 text-white transition-all">
-                </div>
-            </div>
-
-            <button onclick="saveNamesAndGo()" class="w-full mt-8 py-3 bg-gradient-to-r from-rose-600 to-pink-500 text-sm font-bold tracking-wider uppercase rounded-xl glow-button hover:opacity-90 transition-all flex items-center justify-center gap-2">
-                Buka Gerbang Cinta <i class="fas fa-arrow-right text-xs"></i>
-            </button>
-        </div>
-    </div>
-
-    <!-- INTRO PAGE: Kotak Kado Kejutan -->
-    <div id="introPage" class="hidden relative z-10 flex flex-col items-center justify-center text-center p-4 max-w-md w-full transition-all duration-1000">
+    <!-- INTRO PAGE: Kotak Kado Kejutan (Langsung Mulai di Sini) -->
+    <div id="introPage" class="relative z-10 flex flex-col items-center justify-center text-center p-4 max-w-md w-full transition-all duration-1000">
         <div class="absolute -top-16 text-yellow-300 animate-pulse text-2xl flex gap-12 w-full justify-center">
-            <i class="fas fa-star"></i>
+            <i class="fas fa-star text-amber-300 animate-spin" style="animation-duration: 3s"></i>
             <i class="fas fa-sparkles text-rose-400"></i>
-            <i class="fas fa-star"></i>
+            <i class="fas fa-star text-amber-300 animate-spin" style="animation-duration: 4s"></i>
         </div>
 
-        <h1 class="text-3xl md:text-4xl font-elegant font-bold mb-2 tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-rose-300 via-pink-400 to-rose-200">
+        <h1 class="text-4xl md:text-5xl font-elegant font-bold mb-3 tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-rose-300 via-pink-400 to-rose-200">
             Ada Paket Spesial! 🎁
         </h1>
-        <p class="text-sm md:text-base text-gray-300 mb-8 max-w-xs font-light">
-            Halo <span class="partner-name font-bold text-rose-300">Kamu</span>, seseorang telah mengirimkan hadiah rahasia khusus untukmu. Ketuk untuk membuka...
+        <p class="text-base md:text-lg text-gray-300 mb-8 max-w-xs font-light">
+            Halo <span class="font-bold text-rose-300 drop-shadow-[0_0_10px_rgba(244,63,94,0.5)]">Bubub Go Youn-jung</span>, ada hadiah penuh cinta rahasia dari <span class="font-bold text-pink-400">nadippp</span> khusus untukmu. Ketuk untuk membuka...
         </p>
 
-        <!-- KOTAK KADO SVG DENGAN ANIMASI MEMANTUL -->
-        <div id="giftBox" class="gift-bounce cursor-pointer relative w-56 h-56 transition-all duration-500 transform hover:scale-110 active:scale-95 flex items-center justify-center">
-            <svg class="w-full h-full filter drop-shadow-[0_15px_30px_rgba(244,63,94,0.4)]" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <!-- Kotak Kado -->
-                <rect x="40" y="70" width="120" height="100" rx="10" fill="#f43f5e" />
-                <rect x="35" y="55" width="130" height="25" rx="6" fill="#fb7185" />
-                <!-- Pita Vertikal -->
-                <rect x="92" y="55" width="16" height="115" fill="#fde047" />
-                <!-- Pita Horizontal -->
-                <rect x="40" y="110" width="120" height="16" fill="#fde047" />
-                <!-- Pita Simpul Kupu-kupu -->
-                <path d="M100 55C85 30 50 35 70 55H100Z" fill="#fde047" stroke="#eab308" stroke-width="2"/>
-                <path d="M100 55C115 30 150 35 130 55H100Z" fill="#fde047" stroke="#eab308" stroke-width="2"/>
-                <circle cx="100" cy="55" r="10" fill="#facc15" />
+        <!-- KOTAK KADO INTERAKTIF -->
+        <div id="giftBox" onclick="openGift()" class="gift-bounce cursor-pointer relative w-60 h-60 transition-all duration-500 transform hover:scale-110 active:scale-95 flex items-center justify-center">
+            <svg class="w-full h-full filter drop-shadow-[0_20px_40px_rgba(244,63,94,0.5)]" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="40" y="70" width="120" height="100" rx="12" fill="#e11d48" />
+                <rect x="33" y="52" width="134" height="28" rx="8" fill="#f43f5e" />
+                <rect x="91" y="52" width="18" height="118" fill="#fbbf24" />
+                <rect x="40" y="108" width="120" height="18" fill="#fbbf24" />
+                <path d="M100 52C80 20 40 25 65 52H100Z" fill="#fbbf24" stroke="#d97706" stroke-width="2"/>
+                <path d="M100 52C120 20 160 25 135 52H100Z" fill="#fbbf24" stroke="#d97706" stroke-width="2"/>
+                <circle cx="100" cy="52" r="11" fill="#f59e0b" />
             </svg>
-            <!-- Efek Cahaya di belakang Kado -->
-            <div class="absolute inset-0 bg-rose-500 rounded-full filter blur-3xl opacity-25 -z-10 animate-ping"></div>
+            <div class="absolute inset-0 bg-rose-500 rounded-full filter blur-3xl opacity-30 -z-10 animate-ping"></div>
         </div>
 
-        <p class="mt-8 text-xs text-rose-400/80 tracking-widest uppercase animate-pulse">
-            <i class="fas fa-hand-pointer mr-2 animate-bounce"></i>Ketuk Kotak Hadiah
+        <p class="mt-8 text-xs text-rose-400 font-bold tracking-widest uppercase animate-pulse flex items-center gap-2">
+            <i class="fas fa-hand-pointer animate-bounce"></i> Ketuk Kotak Hadiah Ini
         </p>
     </div>
 
-    <!-- MAIN PAGE: Konten Utama yang Indah & Komplit -->
+    <!-- MAIN PAGE: Konten Utama setelah Kado Terbuka -->
     <div id="mainPage" class="hidden relative z-10 w-full max-w-2xl px-4 py-8 md:py-16 overflow-y-auto max-h-screen scroll-smooth">
         
         <!-- SECTION 1: Pembuka Romantis -->
         <section class="min-h-[85vh] flex flex-col justify-center items-center text-center py-8">
-            <span class="text-rose-500 text-5xl mb-6 filter drop-shadow-md animate-bounce">
+            <span class="text-rose-500 text-6xl mb-6 filter drop-shadow-[0_0_15px_rgba(244,63,94,0.7)] animate-pulse">
                 <i class="fas fa-heart"></i>
             </span>
-            <h2 id="typingTitle" class="text-3xl md:text-5xl font-elegant font-bold text-rose-300 mb-6 min-h-[3.5rem]"></h2>
-            <div class="glassmorphism rounded-3xl p-6 md:p-8 max-w-lg w-full text-center relative border border-rose-500/20 shadow-[0_10px_50px_rgba(244,63,94,0.15)]">
-                <div class="absolute -top-3 -left-3 text-rose-500/30 text-5xl font-serif">“</div>
-                <p id="typingText" class="text-base md:text-lg text-rose-100 font-romantis text-3xl leading-relaxed"></p>
-                <div class="absolute -bottom-7 -right-3 text-rose-500/30 text-5xl font-serif">”</div>
+            <h2 id="typingTitle" class="text-3xl md:text-5xl font-elegant font-bold text-rose-300 mb-6 min-h-[3.5rem] tracking-wide"></h2>
+            <div class="glassmorphism rounded-3xl p-6 md:p-8 max-w-lg w-full text-center relative border border-rose-500/20 shadow-[0_10px_50px_rgba(244,63,94,0.2)]">
+                <div class="absolute -top-3 -left-3 text-rose-500/30 text-6xl font-serif">“</div>
+                <p id="typingText" class="text-2xl md:text-4xl text-rose-100 font-romantis leading-relaxed"></p>
+                <div class="absolute -bottom-9 -right-3 text-rose-500/30 text-6xl font-serif">”</div>
             </div>
-            <p class="text-xs text-gray-400 mt-12 animate-pulse">
-                Gulir ke bawah perlahan untuk melihat kejutannya... <br>
-                <i class="fas fa-chevron-down text-lg mt-3 text-rose-400"></i>
+            <p class="text-sm text-gray-400 mt-12 animate-pulse font-light tracking-wide">
+                Gulir ke bawah perlahan untuk melihat kejutan selanjutnya... <br>
+                <i class="fas fa-chevron-down text-xl mt-4 text-rose-400 animate-bounce"></i>
             </p>
         </section>
 
-        <!-- SECTION 2: KARTU ALASAN CINTA (Flip Cards) -->
+        <!-- SECTION 2: KARTU ALASAN CINTA -->
         <section class="min-h-screen flex flex-col justify-center py-16">
             <div class="text-center mb-10">
-                <span class="text-xs font-semibold uppercase tracking-widest text-rose-400 px-3 py-1 bg-rose-500/10 rounded-full">Sesuatu Tentangmu</span>
-                <h3 class="text-2xl md:text-3xl font-elegant font-bold mt-3">Kenapa Aku Begitu Mencintaimu?</h3>
-                <p class="text-xs text-gray-400 mt-2">Sentuh kartu di bawah ini untuk menguak rahasia manisnya ✨</p>
+                <span class="text-xs font-bold uppercase tracking-widest text-rose-400 px-4 py-1.5 bg-rose-500/10 rounded-full border border-rose-500/20">Sesuatu Tentangmu</span>
+                <h3 class="text-3xl md:text-4xl font-elegant font-bold mt-4 tracking-wide">Kenapa Aku Begitu Mencintaimu?</h3>
+                <p class="text-xs text-gray-400 mt-2 font-light">Sentuh kartu di bawah ini untuk melihat alasan manisnya ✨</p>
             </div>
 
-            <!-- Grid Kartu Interaktif -->
             <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
                 <!-- Kartu 1 -->
-                <div class="flip-card h-44 md:h-52 cursor-pointer" onclick="toggleFlip(this)">
+                <div class="flip-card h-48 md:h-56 cursor-pointer" onclick="toggleFlip(this)">
                     <div class="flip-card-inner">
                         <div class="flip-card-front glassmorphism flex flex-col items-center justify-center p-4 border border-rose-500/20">
                             <i class="fas fa-smile-beam text-4xl text-yellow-300 mb-3 animate-pulse"></i>
                             <span class="text-sm font-semibold tracking-wide">Senyumanmu</span>
                         </div>
                         <div class="flip-card-back bg-gradient-to-br from-rose-950 to-pink-900/90 flex items-center justify-center p-4 border border-rose-400/50">
-                            <p class="text-xs md:text-sm font-romantis text-2xl text-rose-100">
-                                Senyuman terindah yang selalu sukses meruntuhkan rasa letihku dalam sekejap mata.
+                            <p class="text-xl md:text-2xl font-romantis text-rose-100 leading-snug">
+                                Senyuman terindah yang selalu sukses menghilangkan semua rasa lelahku dalam sekejap mata.
                             </p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Kartu 2 -->
-                <div class="flip-card h-44 md:h-52 cursor-pointer" onclick="toggleFlip(this)">
+                <div class="flip-card h-48 md:h-56 cursor-pointer" onclick="toggleFlip(this)">
                     <div class="flip-card-inner">
                         <div class="flip-card-front glassmorphism flex flex-col items-center justify-center p-4 border border-rose-500/20">
                             <i class="fas fa-heart-circle-check text-4xl text-rose-400 mb-3 animate-pulse"></i>
                             <span class="text-sm font-semibold tracking-wide">Ketulusanmu</span>
                         </div>
                         <div class="flip-card-back bg-gradient-to-br from-pink-950 to-rose-900/90 flex items-center justify-center p-4 border border-pink-400/50">
-                            <p class="text-xs md:text-sm font-romantis text-2xl text-pink-100">
-                                Cara tulusmu peduli menyembuhkan segala gundahku. Bersamamu aku merasa begitu utuh.
+                            <p class="text-xl md:text-2xl font-romantis text-pink-100 leading-snug">
+                                Cara tulusmu menyayangi dan mempedulikanku membuat hidupku terasa jauh lebih utuh dan bahagia.
                             </p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Kartu 3 -->
-                <div class="flip-card h-44 md:h-52 cursor-pointer" onclick="toggleFlip(this)">
+                <div class="flip-card h-48 md:h-56 cursor-pointer" onclick="toggleFlip(this)">
                     <div class="flip-card-inner">
                         <div class="flip-card-front glassmorphism flex flex-col items-center justify-center p-4 border border-rose-500/20">
                             <i class="fas fa-shield-heart text-4xl text-sky-400 mb-3 animate-pulse"></i>
                             <span class="text-sm font-semibold tracking-wide">Dukunganmu</span>
                         </div>
                         <div class="flip-card-back bg-gradient-to-br from-sky-950 to-teal-900/90 flex items-center justify-center p-4 border border-sky-400/50">
-                            <p class="text-xs md:text-sm font-romantis text-2xl text-sky-100">
-                                Kamu selalu ada mengulurkan dekapan hangat saat duniaku sedang terasa melelahkan.
+                            <p class="text-xl md:text-2xl font-romantis text-sky-100 leading-snug">
+                                Kamu selalu ada memberikan dekapan paling hangat di saat duniaku sedang terasa sangat melelahkan.
                             </p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Kartu 4 -->
-                <div class="flip-card h-44 md:h-52 cursor-pointer" onclick="toggleFlip(this)">
+                <div class="flip-card h-48 md:h-56 cursor-pointer" onclick="toggleFlip(this)">
                     <div class="flip-card-inner">
                         <div class="flip-card-front glassmorphism flex flex-col items-center justify-center p-4 border border-rose-500/20">
                             <i class="fas fa-wand-magic-sparkles text-4xl text-purple-300 mb-3 animate-pulse"></i>
                             <span class="text-sm font-semibold tracking-wide">Keunikanmu</span>
                         </div>
                         <div class="flip-card-back bg-gradient-to-br from-purple-950 to-indigo-900/90 flex items-center justify-center p-4 border border-purple-400/50">
-                            <p class="text-xs md:text-sm font-romantis text-2xl text-purple-100">
-                                Segala tingkah manjamu dan humor lucumu adalah keajaiban harian yang paling kunanti.
+                            <p class="text-xl md:text-2xl font-romantis text-purple-100 leading-snug">
+                                Segala tingkah manjamu yang lucu adalah kebahagiaan harian yang selalu paling aku tunggu-tunggu.
                             </p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Kartu 5 -->
-                <div class="flip-card h-44 md:h-52 cursor-pointer" onclick="toggleFlip(this)">
+                <div class="flip-card h-48 md:h-56 cursor-pointer" onclick="toggleFlip(this)">
                     <div class="flip-card-inner">
                         <div class="flip-card-front glassmorphism flex flex-col items-center justify-center p-4 border border-rose-500/20">
                             <i class="fas fa-eye text-4xl text-teal-300 mb-3 animate-pulse"></i>
                             <span class="text-sm font-semibold tracking-wide">Tatap Matamu</span>
                         </div>
                         <div class="flip-card-back bg-gradient-to-br from-teal-950 to-emerald-900/90 flex items-center justify-center p-4 border border-teal-400/50">
-                            <p class="text-xs md:text-sm font-romantis text-2xl text-teal-100">
-                                Di kedalaman matamu, kutemukan rumah ternyaman tempat jiwaku ingin pulang selamanya.
+                            <p class="text-xl md:text-2xl font-romantis text-teal-100 leading-snug">
+                                Di dalam pancaran matamu yang indah, aku menemukan tempat paling nyaman untuk pulang selamanya.
                             </p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Kartu 6 -->
-                <div class="flip-card h-44 md:h-52 cursor-pointer" onclick="toggleFlip(this)">
+                <div class="flip-card h-48 md:h-56 cursor-pointer" onclick="toggleFlip(this)">
                     <div class="flip-card-inner">
                         <div class="flip-card-front glassmorphism flex flex-col items-center justify-center p-4 border border-rose-500/20">
                             <i class="fas fa-infinity text-4xl text-rose-500 mb-3 animate-pulse"></i>
                             <span class="text-sm font-semibold tracking-wide">Semuanya</span>
                         </div>
                         <div class="flip-card-back bg-gradient-to-br from-rose-950 to-slate-900/90 flex items-center justify-center p-4 border border-rose-500/50">
-                            <p class="text-xs md:text-sm font-romantis text-2xl text-rose-200">
-                                Sederhananya, aku mencintaimu tanpa syarat apa pun, hari ini, esok, dan selama-lamanya.
+                            <p class="text-xl md:text-2xl font-romantis text-rose-200 leading-snug">
+                                Sederhananya, aku mencintaimu tanpa syarat apa pun, hari ini, esok, dan untuk selama-lamanya.
                             </p>
                         </div>
                     </div>
@@ -311,67 +293,63 @@
             </div>
         </section>
 
-        <!-- SECTION 3: LOVE TIMELINE (Alur Kenangan) -->
+        <!-- SECTION 3: ALUR KISAH INDAH -->
         <section class="min-h-screen flex flex-col justify-center py-16">
             <div class="text-center mb-10">
-                <span class="text-xs font-semibold uppercase tracking-widest text-pink-400 px-3 py-1 bg-pink-500/10 rounded-full">Perjalanan Kita</span>
-                <h3 class="text-2xl md:text-3xl font-elegant font-bold mt-3">Alur Indah Kisah Kita</h3>
-                <p class="text-xs text-gray-400 mt-2">Ketuk tombol navigasi di bawah untuk menelusuri kenangan kita</p>
+                <span class="text-xs font-bold uppercase tracking-widest text-pink-400 px-4 py-1.5 bg-pink-500/10 rounded-full border border-pink-500/20">Perjalanan Kita</span>
+                <h3 class="text-3xl md:text-4xl font-elegant font-bold mt-4 tracking-wide">Alur Indah Kisah Kita</h3>
+                <p class="text-xs text-gray-400 mt-2 font-light">Ketuk tombol panah di bawah untuk mengenang kisah manis kita</p>
             </div>
 
-            <div class="glassmorphism rounded-3xl p-6 md:p-8 border border-rose-500/15 relative overflow-hidden min-h-[300px] flex flex-col justify-between">
-                <!-- Timeline Content -->
-                <div id="timelineContainer" class="transition-all duration-500">
+            <div class="glassmorphism rounded-3xl p-6 md:p-8 border border-rose-500/15 relative overflow-hidden min-h-[320px] flex flex-col justify-between shadow-[0_10px_40px_rgba(236,72,153,0.1)]">
+                <div id="timelineContainer" class="transition-all duration-500 transform">
                     <div class="flex items-center gap-3 text-rose-400 mb-4">
-                        <span class="text-2xl" id="timelineIcon"><i class="fas fa-star-and-crescent"></i></span>
-                        <h4 class="font-bold text-lg text-rose-200" id="timelineTitle">Awal Cerita Kita</h4>
+                        <span class="text-3xl animate-bounce" id="timelineIcon"><i class="fas fa-star-and-crescent"></i></span>
+                        <h4 class="font-bold text-xl text-rose-200" id="timelineTitle">Awal Cerita Kita</h4>
                     </div>
-                    <p class="text-sm md:text-base text-gray-300 leading-relaxed font-light italic" id="timelineDesc">
-                        "Semesta punya cara yang tidak terduga untuk mempertemukan kita. Saat pertama kali mengenalmu, ada getaran hangat yang membisikkan bahwa kamulah pelengkap jiwaku."
+                    <p class="text-base md:text-lg text-gray-200 leading-relaxed font-light italic" id="timelineDesc">
+                        "Semesta punya cara yang sangat indah untuk mempertemukan kita. Saat pertama kali mengenalmu, ada getaran hangat di hati yang membisikkan bahwa kamulah pelengkap jiwaku."
                     </p>
                 </div>
 
-                <!-- Timeline Nav Controls -->
                 <div class="flex items-center justify-between mt-8 pt-4 border-t border-rose-500/10">
-                    <button onclick="prevTimeline()" class="w-10 h-10 rounded-full flex items-center justify-center bg-rose-500/10 hover:bg-rose-500/25 text-rose-300 transition-all">
+                    <button onclick="prevTimeline()" class="w-12 h-12 rounded-full flex items-center justify-center bg-rose-500/10 hover:bg-rose-500/30 text-rose-300 transition-all active:scale-90 border border-rose-500/20">
                         <i class="fas fa-chevron-left"></i>
                     </button>
-                    <!-- Indicators -->
-                    <div class="flex gap-2" id="timelineDots">
-                        <span class="w-2.5 h-2.5 rounded-full bg-rose-500 transition-all duration-300"></span>
-                        <span class="w-2.5 h-2.5 rounded-full bg-rose-500/20 transition-all duration-300"></span>
-                        <span class="w-2.5 h-2.5 rounded-full bg-rose-500/20 transition-all duration-300"></span>
+                    <div class="flex gap-2.5" id="timelineDots">
+                        <span class="w-3 h-3 rounded-full bg-rose-500 transition-all duration-300 shadow-[0_0_8px_#f43f5e]"></span>
+                        <span class="w-3 h-3 rounded-full bg-rose-500/20 transition-all duration-300"></span>
+                        <span class="w-3 h-3 rounded-full bg-rose-500/20 transition-all duration-300"></span>
                     </div>
-                    <button onclick="nextTimeline()" class="w-10 h-10 rounded-full flex items-center justify-center bg-rose-500/10 hover:bg-rose-500/25 text-rose-300 transition-all">
+                    <button onclick="nextTimeline()" class="w-12 h-12 rounded-full flex items-center justify-center bg-rose-500/10 hover:bg-rose-500/30 text-rose-300 transition-all active:scale-90 border border-rose-500/20">
                         <i class="fas fa-chevron-right"></i>
                     </button>
                 </div>
             </div>
         </section>
 
-        <!-- SECTION 4: TAMAN CINTA & KOTAK HARAPAN (Wishing Well) -->
+        <!-- SECTION 4: TAMAN CINTA INTERAKTIF & KOTAK HARAPAN -->
         <section class="min-h-screen flex flex-col justify-center py-16 relative">
             <div class="text-center mb-8">
-                <span class="text-xs font-semibold uppercase tracking-widest text-emerald-400 px-3 py-1 bg-emerald-500/10 rounded-full">Taman Interaktif</span>
-                <h3 class="text-2xl md:text-3xl font-elegant font-bold mt-3">Tumbuhkan Bunga Cinta</h3>
-                <p class="text-xs text-gray-400 mt-2">Siram pot di bawah ini dengan mengetuk alat penyiram air!</p>
+                <span class="text-xs font-bold uppercase tracking-widest text-emerald-400 px-4 py-1.5 bg-emerald-500/10 rounded-full border border-emerald-500/20">Taman Interaktif</span>
+                <h3 class="text-3xl md:text-4xl font-elegant font-bold mt-4 tracking-wide">Tumbuhkan Bunga Cinta</h3>
+                <p class="text-xs text-gray-400 mt-2 font-light">Siram pot di bawah ini dengan mengetuk alat penyiram air!</p>
             </div>
 
-            <div class="glassmorphism rounded-3xl p-6 flex flex-col items-center relative overflow-hidden border border-emerald-500/20 shadow-[0_10px_40px_rgba(16,185,129,0.06)]">
-                <!-- Alat penyiram (Watering Can) yang bisa diklik -->
-                <div id="wateringCan" class="cursor-pointer transition-all duration-500 transform hover:scale-110 active:rotate-[-35deg] relative mb-12" onclick="waterPlants()">
-                    <svg class="w-20 h-20 text-emerald-400 filter drop-shadow-[0_4px_12px_rgba(52,211,153,0.4)]" fill="currentColor" viewBox="0 0 24 24">
+            <div class="glassmorphism rounded-3xl p-6 flex flex-col items-center relative overflow-hidden border border-emerald-500/20 shadow-[0_15px_40px_rgba(16,185,129,0.1)]">
+                <!-- Penyiram Air -->
+                <div id="wateringCan" class="cursor-pointer transition-all duration-500 transform hover:scale-110 active:rotate-[-35deg] relative mb-12 animate-bounce" style="animation-duration: 2s" onclick="waterPlants()">
+                    <svg class="w-24 h-24 text-emerald-400 filter drop-shadow-[0_4px_15px_rgba(52,211,153,0.5)]" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M19,12C19,15.86 15.86,19 12,19C8.14,19 5,15.86 5,12C5,8.14 8.14,5 12,5C15.86,5 19,8.14 19,12M21,12A9,9 0 0,0 12,3A9,9 0 0,0 3,12A9,9 0 0,0 12,21A9,9 0 0,0 21,12M22,12H20M4,12H2M12,2V4M12,20V22M17.66,6.34L16.24,7.76M7.76,16.24L6.34,17.66M17.66,17.66L16.24,16.24M7.76,6.34L6.34,7.76Z" />
                     </svg>
-                    <!-- Floating text instruksi -->
-                    <span class="absolute -top-4 -right-12 bg-emerald-500 text-slate-950 text-[10px] font-extrabold px-3 py-1 rounded-full animate-bounce shadow-md">Siram Aku!</span>
+                    <span class="absolute -top-4 -right-14 bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 text-xs font-black px-3 py-1 rounded-full shadow-lg">Siram Aku!</span>
                 </div>
 
-                <!-- Efek air menetes (hidden by default, animated by JS) -->
-                <div id="waterDrops" class="absolute top-[130px] flex gap-2 hidden z-10">
-                    <div class="w-1.5 h-5 bg-sky-400 rounded-full animate-bounce"></div>
-                    <div class="w-1.5 h-5 bg-sky-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
-                    <div class="w-1.5 h-5 bg-sky-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                <!-- Tetesan Air -->
+                <div id="waterDrops" class="absolute top-[140px] flex gap-3 hidden z-10">
+                    <div class="w-2 h-6 bg-sky-400 rounded-full animate-bounce"></div>
+                    <div class="w-2 h-6 bg-sky-400 rounded-full animate-bounce" style="animation-delay: 0.15s"></div>
+                    <div class="w-2 h-6 bg-sky-400 rounded-full animate-bounce" style="animation-delay: 0.3s"></div>
                 </div>
 
                 <!-- Baris Pot Bunga -->
@@ -379,45 +357,38 @@
                     <!-- Bunga 1 -->
                     <div class="flex flex-col items-center">
                         <div class="h-32 flex items-end justify-center">
-                            <!-- Bunga Tulip SVG yang bisa tumbuh -->
                             <svg id="flower1" class="w-16 h-0 transition-all duration-1000 ease-out origin-bottom" viewBox="0 0 100 150" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M50 150V80" stroke="#10b981" stroke-width="6" stroke-linecap="round"/>
                                 <path d="M50 110Q30 100 35 90Q40 80 50 100" stroke="#10b981" stroke-width="4" fill="#10b981"/>
-                                <!-- Kelopak Bunga Tulip -->
                                 <path d="M50 80C30 70 30 40 50 30C70 40 70 70 50 80Z" fill="#f43f5e"/>
                                 <path d="M50 80C40 60 40 45 50 35C60 45 60 60 50 80Z" fill="#fda4af"/>
                             </svg>
                         </div>
-                        <div class="w-16 h-8 bg-amber-950 rounded-b-xl rounded-t-sm shadow-inner relative flex items-center justify-center border-t border-amber-800">
-                            <span class="text-[9px] text-amber-200/60 font-semibold uppercase">Mawar</span>
+                        <div class="w-18 h-9 bg-amber-950 rounded-b-xl rounded-t-sm shadow-inner relative flex items-center justify-center border-t border-amber-800 px-2">
+                            <span class="text-[10px] text-amber-200 font-bold uppercase tracking-wide">Mawar</span>
                         </div>
                     </div>
 
                     <!-- Bunga 2 -->
                     <div class="flex flex-col items-center">
                         <div class="h-32 flex items-end justify-center">
-                            <!-- Bunga Matahari SVG -->
                             <svg id="flower2" class="w-16 h-0 transition-all duration-1000 ease-out origin-bottom" viewBox="0 0 100 150" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M50 150V70" stroke="#10b981" stroke-width="6" stroke-linecap="round"/>
-                                <!-- Kelopak Matahari melingkar -->
                                 <circle cx="50" cy="70" r="25" fill="#eab308"/>
                                 <circle cx="50" cy="70" r="14" fill="#78350f"/>
-                                <!-- Daun -->
                                 <path d="M50 120Q70 110 65 100Q60 90 50 110" stroke="#10b981" stroke-width="4" fill="#10b981"/>
                             </svg>
                         </div>
-                        <div class="w-16 h-8 bg-amber-950 rounded-b-xl rounded-t-sm shadow-inner relative flex items-center justify-center border-t border-amber-800">
-                            <span class="text-[9px] text-amber-200/60 font-semibold uppercase">Matahari</span>
+                        <div class="w-18 h-9 bg-amber-950 rounded-b-xl rounded-t-sm shadow-inner relative flex items-center justify-center border-t border-amber-800 px-2">
+                            <span class="text-[10px] text-amber-200 font-bold uppercase tracking-wide">Matahari</span>
                         </div>
                     </div>
 
                     <!-- Bunga 3 -->
                     <div class="flex flex-col items-center">
                         <div class="h-32 flex items-end justify-center">
-                            <!-- Bunga Sakura/Lily SVG -->
                             <svg id="flower3" class="w-16 h-0 transition-all duration-1000 ease-out origin-bottom" viewBox="0 0 100 150" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M50 150V75" stroke="#10b981" stroke-width="6" stroke-linecap="round"/>
-                                <!-- Kelopak Sakura -->
                                 <circle cx="50" cy="75" r="12" fill="#f472b6"/>
                                 <circle cx="36" cy="75" r="10" fill="#f472b6"/>
                                 <circle cx="64" cy="75" r="10" fill="#f472b6"/>
@@ -426,231 +397,120 @@
                                 <circle cx="50" cy="75" r="6" fill="#fef08a"/>
                             </svg>
                         </div>
-                        <div class="w-16 h-8 bg-amber-950 rounded-b-xl rounded-t-sm shadow-inner relative flex items-center justify-center border-t border-amber-800">
-                            <span class="text-[9px] text-amber-200/60 font-semibold uppercase">Sakura</span>
+                        <div class="w-18 h-9 bg-amber-950 rounded-b-xl rounded-t-sm shadow-inner relative flex items-center justify-center border-t border-amber-800 px-2">
+                            <span class="text-[10px] text-amber-200 font-bold uppercase tracking-wide">Sakura</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Notifikasi Pertumbuhan -->
-                <div id="gardenStatus" class="mt-6 text-sm font-semibold text-emerald-300 animate-pulse text-center">
+                <div id="gardenStatus" class="mt-6 text-sm font-bold text-rose-400 animate-pulse text-center">
                     Taman kita gersang, butuh siraman cinta darimu... 🥀
                 </div>
             </div>
 
-            <!-- KOTAK HARAPAN (Wishing Well) -->
-            <div class="glassmorphism rounded-3xl p-6 mt-8 border border-pink-500/20 shadow-[0_10px_30px_rgba(244,63,94,0.05)]">
+            <!-- KOTAK HARAPAN -->
+            <div class="glassmorphism rounded-3xl p-6 mt-8 border border-pink-500/20 shadow-[0_10px_30px_rgba(244,63,94,0.1)]">
                 <div class="flex items-center gap-2 text-pink-400 mb-3">
-                    <i class="fas fa-wand-magic-sparkles text-lg"></i>
+                    <i class="fas fa-wand-magic-sparkles text-lg animate-spin" style="animation-duration: 3s"></i>
                     <h4 class="font-bold text-sm tracking-wider uppercase">Kotak Impian Bersama</h4>
                 </div>
-                <p class="text-xs text-gray-400 mb-4 font-light">Tuliskan mimpimu atau harapan terbesarmu denganku di bawah ini, lalu lemparkan harapan tersebut!</p>
-                <div class="flex gap-2">
-                    <input type="text" id="wishingText" placeholder="Contoh: Selalu bahagia bersama selamanya..." class="flex-1 bg-slate-950/60 border border-pink-500/20 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-pink-500 text-white transition-all">
-                    <button onclick="throwWish()" class="px-5 bg-gradient-to-r from-pink-600 to-rose-500 rounded-xl text-white font-bold text-sm glow-button transition-all flex items-center gap-1">
-                        <i class="fas fa-coins text-yellow-300"></i> Kirim
+                <p class="text-xs text-gray-400 mb-4 font-light">Tuliskan keinginan atau harapan terbesarmu bersama nadippp di bawah ini, lalu kirim ke langit semesta!</p>
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <input type="text" id="wishingText" placeholder="Contoh: Selalu bahagia bersama selamanya..." class="flex-1 bg-slate-950/60 border border-pink-500/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-pink-500 text-white transition-all">
+                    <button onclick="throwWish()" class="py-3 px-6 bg-gradient-to-r from-pink-600 to-rose-500 rounded-xl text-white font-bold text-sm glow-button transition-all flex items-center justify-center gap-2 active:scale-95">
+                        <i class="fas fa-paper-plane"></i> Kirim Harapan
                     </button>
                 </div>
-                <div id="wishStatus" class="text-xs text-center text-pink-300 mt-3 font-semibold hidden">
-                    ✨ Harapanmu telah dipancarkan ke langit semesta! ✨
+                <div id="wishStatus" class="text-sm text-center text-pink-300 mt-4 font-bold hidden bg-pink-500/10 py-2 rounded-xl border border-pink-500/20 animate-pulse">
+                    ✨ Harapanmu telah dipancarkan dan disimpan di bintang semesta! ✨
                 </div>
             </div>
         </section>
 
-        <!-- SECTION 5: LEMBARAN MEMORI (Polaroid) -->
+        <!-- SECTION 5: ALBUM FOTO ROMANTIS -->
         <section class="min-h-screen flex flex-col justify-center py-16">
             <div class="text-center mb-10">
-                <span class="text-xs font-semibold uppercase tracking-widest text-indigo-400 px-3 py-1 bg-indigo-500/10 rounded-full">Kenangan Indah</span>
-                <h3 class="text-2xl md:text-3xl font-elegant font-bold mt-3">Album Kasih Kita</h3>
-                <p class="text-xs text-gray-400 mt-2">Geser atau sentuh foto teratas untuk membalik tumpukan!</p>
+                <span class="text-xs font-bold uppercase tracking-widest text-indigo-400 px-4 py-1.5 bg-indigo-500/10 rounded-full border border-indigo-500/20">Kenangan Indah</span>
+                <h3 class="text-3xl md:text-4xl font-elegant font-bold mt-4 tracking-wide">Album Kasih Kita</h3>
+                <p class="text-xs text-gray-400 mt-2 font-light">Ketuk foto teratas untuk melihat foto romantis berikutnya!</p>
             </div>
 
-            <!-- Tumpukan Polaroid dengan Event Handlers Gestur -->
             <div class="relative w-72 h-96 mx-auto flex items-center justify-center" id="polaroidContainer">
-                
                 <!-- Foto 1 (Teratas) -->
-                <div class="polaroid-card absolute w-64 bg-white p-4 pb-8 text-slate-800 shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-sm transform rotate-[-4deg] hover:rotate-0 transition-all duration-500 cursor-grab active:cursor-grabbing border border-gray-100 z-30" onclick="swipePolaroid(this)">
-                    <img class="w-full h-56 object-cover rounded-sm mb-4 bg-pink-100 pointer-events-none" src="https://placehold.co/400x400/ffe4e6/e11d48?text=Semestaku+%E2%9C%A8" alt="Foto Cantik">
-                    <div class="text-center font-romantis text-3xl text-rose-600">
+                <div class="polaroid-card absolute w-68 bg-white p-4 pb-8 text-slate-800 shadow-[0_25px_60px_rgba(0,0,0,0.6)] rounded-md transform rotate-[-4deg] hover:rotate-0 transition-all duration-500 cursor-pointer border border-gray-100 z-30" onclick="swipePolaroid(this)">
+                    <img class="w-full h-60 object-cover rounded-sm mb-4 bg-pink-100 pointer-events-none" src="https://images.unsplash.com/photo-1518199266791-5375a83190b7?q=80&w=500&auto=format&fit=crop" alt="Foto Cantik">
+                    <div class="text-center font-romantis text-4xl text-rose-600">
                         Kamu yang memikat hati...
                     </div>
                 </div>
 
                 <!-- Foto 2 (Tengah) -->
-                <div class="polaroid-card absolute w-64 bg-white p-4 pb-8 text-slate-800 shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-sm transform rotate-[3deg] hover:rotate-0 transition-all duration-500 cursor-grab active:cursor-grabbing border border-gray-100 z-20" onclick="swipePolaroid(this)">
-                    <img class="w-full h-56 object-cover rounded-sm mb-4 bg-rose-100 pointer-events-none" src="https://placehold.co/400x400/fce7f3/db2777?text=Tawa+Kita+%F0%9F%92%96" alt="Foto Kita">
-                    <div class="text-center font-romantis text-3xl text-pink-600">
-                        Saat tawa kita melebur utuh.
+                <div class="polaroid-card absolute w-68 bg-white p-4 pb-8 text-slate-800 shadow-[0_25px_60px_rgba(0,0,0,0.6)] rounded-md transform rotate-[4deg] hover:rotate-0 transition-all duration-500 cursor-pointer border border-gray-100 z-20" onclick="swipePolaroid(this)">
+                    <img class="w-full h-60 object-cover rounded-sm mb-4 bg-rose-100 pointer-events-none" src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=500&auto=format&fit=crop" alt="Foto Kita">
+                    <div class="text-center font-romantis text-4xl text-pink-600">
+                        Saat tawa kita menyatu utuh.
                     </div>
                 </div>
 
                 <!-- Foto 3 (Terbawah) -->
-                <div class="polaroid-card absolute w-64 bg-white p-4 pb-8 text-slate-800 shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-sm transform rotate-[-2deg] hover:rotate-0 transition-all duration-500 cursor-grab active:cursor-grabbing border border-gray-100 z-10" onclick="swipePolaroid(this)">
-                    <img class="w-full h-56 object-cover rounded-sm mb-4 bg-violet-100 pointer-events-none" src="https://placehold.co/400x400/ede9fe/7c3aed?text=Hari+Esok+%F0%9F%8E%A1" alt="Foto Masa Depan">
-                    <div class="text-center font-romantis text-3xl text-violet-600">
+                <div class="polaroid-card absolute w-68 bg-white p-4 pb-8 text-slate-800 shadow-[0_25px_60px_rgba(0,0,0,0.6)] rounded-md transform rotate-[-2deg] hover:rotate-0 transition-all duration-500 cursor-pointer border border-gray-100 z-10" onclick="swipePolaroid(this)">
+                    <img class="w-full h-60 object-cover rounded-sm mb-4 bg-violet-100 pointer-events-none" src="https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?q=80&w=500&auto=format&fit=crop" alt="Foto Masa Depan">
+                    <div class="text-center font-romantis text-4xl text-violet-600">
                         Bahagia melangkah selamanya.
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- SECTION 6: KLIKER DETAK JANTUNG & MILESTONE -->
-        <section class="min-h-screen flex flex-col justify-center items-center text-center py-16">
-            <span class="text-xs font-semibold uppercase tracking-widest text-rose-400 mb-2 px-3 py-1 bg-rose-500/10 rounded-full">Kirim Detak Jantung</span>
-            <h3 class="text-3xl md:text-4xl font-elegant font-bold text-rose-300 mb-4">Seberapa Besar Cintamu?</h3>
-            <p class="text-sm text-gray-400 mb-8 max-w-xs font-light">Tekan tombol hati di bawah sebanyak mungkin untuk mengirimkan sinyal cinta kepadaku!</p>
+        <!-- SECTION 6: PENUTUP DAN TOMBOL SAYANG -->
+        <section class="min-h-[80vh] flex flex-col justify-center items-center text-center py-16">
+            <div class="glassmorphism rounded-3xl p-8 border border-rose-500/20 max-w-md w-full relative overflow-hidden shadow-[0_20px_50px_rgba(244,63,94,0.15)]">
+                <div class="absolute -right-6 -bottom-6 text-rose-500/10 text-9xl"><i class="fas fa-heart"></i></div>
+                
+                <h3 class="text-2xl md:text-3xl font-elegant font-bold text-rose-300 mb-4">Satu Pertanyaan Terakhir...</h3>
+                <p class="text-base md:text-lg text-gray-200 font-light mb-8 leading-relaxed">
+                    Apakah Bubub Go Youn-jung bersedia untuk terus berjalan beriringan dan mengukir kisah manis bersama nadippp selamanya? 🥺❤️
+                </p>
 
-            <!-- Hati Klik Raksasa -->
-            <div class="relative flex items-center justify-center">
-                <button id="heartClicker" class="relative z-10 w-32 h-32 bg-gradient-to-tr from-rose-600 to-pink-500 rounded-full flex items-center justify-center shadow-[0_0_40px_rgba(244,63,94,0.6)] focus:outline-none transform active:scale-90 transition-transform duration-100" onclick="clickHeart()">
-                    <i class="fas fa-heart text-5xl text-white animate-pulse"></i>
-                </button>
-                <!-- Riak Berdenyut -->
-                <div class="absolute inset-0 bg-rose-500 rounded-full filter blur-2xl opacity-40 animate-ping -z-10"></div>
-            </div>
-
-            <!-- Score / Counter -->
-            <div class="mt-8 glassmorphism px-8 py-4 rounded-2xl border border-rose-500/20 shadow-[0_0_20px_rgba(244,63,94,0.1)]">
-                <div class="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-rose-400 to-pink-300" id="loveCounter">
-                    0
+                <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                    <button onclick="acceptLove()" class="w-full sm:w-auto py-3.5 px-8 bg-gradient-to-r from-rose-600 to-pink-500 text-white font-bold text-base rounded-xl glow-button uppercase tracking-wider">
+                        Mau Banget! 💖
+                    </button>
+                    <button id="moveBtn" onmouseover="moveButton()" onclick="moveButton()" class="w-full sm:w-auto py-3.5 px-8 bg-slate-900 border border-gray-700 text-gray-400 font-medium text-base rounded-xl transition-all duration-300 sm:static">
+                        Enggak Mau 😜
+                    </button>
                 </div>
-                <div class="text-[10px] text-rose-300/80 uppercase tracking-widest mt-1 font-bold">Detak Kasih Terkirim</div>
             </div>
-
-            <!-- Milestone Notification Box (Floating) -->
-            <div id="milestonePopup" class="mt-6 opacity-0 scale-95 transition-all duration-500 max-w-sm glassmorphism p-4 rounded-xl border border-pink-500/30 text-rose-200 text-sm font-semibold hidden">
-                <i class="fas fa-gift text-yellow-300 mr-2"></i> <span id="milestoneText">Pencapaian cinta baru dibuka!</span>
-            </div>
-
-            <div class="mt-16 text-gray-400 text-xs italic font-romantis text-2xl max-w-md px-4">
-                "Aku mencintaimu bukan hanya karena dirimu apa adanya, melainkan karena menjadi seperti apa diriku saat berada di dekatmu."
-            </div>
-            
-            <footer class="mt-20 text-[10px] text-gray-500 tracking-widest uppercase">
-                Didesain dengan Cinta & Logika Abadi ❤️
-            </footer>
         </section>
-
     </div>
 
+    <!-- JAVASCRIPT LOGIC -->
     <script>
-        // --- 1. SETUP ENGINE SUARA (MUSIC BOX SYNTHESIZER PREMIUM) ---
-        // Menggunakan Web Audio API murni untuk sintesis instrumen kotak musik analog
-        let audioCtx = null;
-        let isMusicPlaying = false;
-        let melodySequence = null;
-        let notes = {
-            'C4': 261.63, 'D4': 293.66, 'E4': 329.63, 'F4': 349.23, 'G4': 392.00, 'A4': 440.00, 'B4': 493.88,
-            'C5': 523.25, 'D5': 587.33, 'E5': 659.25, 'F5': 698.46, 'G5': 783.99, 'A5': 880.00, 'B5': 987.77,
-            'C6': 1046.50, 'D6': 1174.66, 'E6': 1318.51
-        };
-
-        // Melodi Lofi Kotak Musik yang sangat Indah & Tenang
-        let romanticMelody = [
-            'C5', 'E5', 'G5', 'C6', 'G5', 'E5', 
-            'A4', 'C5', 'E5', 'A5', 'E5', 'C5',
-            'F4', 'A4', 'C5', 'F5', 'C5', 'A4',
-            'G4', 'B4', 'D5', 'G5', 'D5', 'B4',
-            'C5', 'E5', 'G5', 'C6', 'D6', 'E6',
-            'A4', 'C5', 'E5', 'A5', 'C6', 'E6',
-            'F4', 'A4', 'C5', 'F5', 'A5', 'C6',
-            'G4', 'B4', 'D5', 'G5', 'B5', 'D6'
+        // Data Alur Cerita
+        const timelineData = [
+            {
+                icon: '<i class="fas fa-star-and-crescent"></i>',
+                title: "Awal Cerita Kita",
+                desc: '"Semesta punya cara yang sangat indah untuk mempertemukan kita. Saat pertama kali mengenalmu, ada getaran hangat di hati yang membisikkan bahwa kamulah pelengkap jiwaku."'
+            },
+            {
+                icon: '<i class="fas fa-mug-hot"></i>',
+                title: "Momen Manis Bersama",
+                desc: '"Setiap tawa, obrolan kecil, hingga candaan sederhana bersamamu selalu menjadi momen terbaik di hariku. Kamu membuat hal biasa menjadi luar biasa indah."'
+            },
+            {
+                icon: '<i class="fas fa-infinity"></i>',
+                title: "Harapan Masa Depan",
+                desc: '"Kini, bersamamu, aku ingin terus melangkah melewati segala musim kehidupan. Menjagamu, menyayangimu, dan mencintaimu di setiap detak waktu yang kita miliki."'
+            }
         ];
-        let noteIndex = 0;
+        let currentTimelineIndex = 0;
 
-        function initAudio() {
-            if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            }
-        }
-
-        // Sintesis suara lonceng kristal metalik dengan reverb alami (kotak lagu)
-        function playChime(frequency, time, duration = 1.8) {
-            if (!audioCtx) return;
-            
-            let osc = audioCtx.createOscillator();
-            let subOsc = audioCtx.createOscillator();
-            let gainNode = audioCtx.createGain();
-            
-            osc.connect(gainNode);
-            subOsc.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
-            
-            // Kombinasi gelombang untuk karakter suara kotak musik logam
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(frequency, time);
-
-            subOsc.type = 'triangle';
-            subOsc.frequency.setValueAtTime(frequency * 0.5, time); // Memberikan resonansi dalam
-            
-            // Envelope volume: Menyerang secara instan, meluruh perlahan (pluck)
-            gainNode.gain.setValueAtTime(0.18, time);
-            gainNode.gain.exponentialRampToValueAtTime(0.0001, time + duration);
-            
-            osc.start(time);
-            subOsc.start(time);
-            osc.stop(time + duration);
-            subOsc.stop(time + duration);
-
-            // Trigger visualizer bar secara acak sesuai dentingan
-            animateVisualizer();
-        }
-
-        function animateVisualizer() {
-            if (!isMusicPlaying) return;
-            const bars = ['b1', 'b2', 'b3', 'b4'];
-            bars.forEach(barId => {
-                const element = document.getElementById(barId);
-                if (element) {
-                    const randomHeight = Math.floor(Math.random() * 16) + 4;
-                    element.style.height = `${randomHeight}px`;
-                }
-            });
-        }
-
-        function resetVisualizer() {
-            const bars = ['b1', 'b2', 'b3', 'b4'];
-            bars.forEach(barId => {
-                const element = document.getElementById(barId);
-                if (element) element.style.height = `4px`;
-            });
-        }
-
-        // Jalankan sequencer kotak musik
-        function startMusicBox() {
-            initAudio();
-            if (audioCtx.state === 'suspended') {
-                audioCtx.resume();
-            }
-            isMusicPlaying = true;
-            
-            function scheduleNextNote() {
-                if (!isMusicPlaying) return;
-                let currentNote = romanticMelody[noteIndex];
-                let frequency = notes[currentNote];
-                
-                playChime(frequency, audioCtx.currentTime, 2.0);
-                
-                noteIndex = (noteIndex + 1) % romanticMelody.length;
-                // Tempo Alunan Lambat & Rileks
-                melodySequence = setTimeout(scheduleNextNote, 450); 
-            }
-            scheduleNextNote();
-        }
-
-        function stopMusicBox() {
-            isMusicPlaying = false;
-            clearTimeout(melodySequence);
-            resetVisualizer();
-        }
-
-        // --- 2. LOGIKA TRANSIFI FASE & PARTIKEL LATAR BELAKANG ---
+        // Efek Partikel Latar Belakang
         const canvas = document.getElementById('particleCanvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
-        let heartRateCount = 0;
 
-        // Mengatur resolusi kanvas dinamis
         function resizeCanvas() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
@@ -658,426 +518,241 @@
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
 
-        // Model Partikel (Bunga Sakura & Hati Berkilau)
         class Particle {
-            constructor(isBurst = false, burstX = 0, burstY = 0) {
-                this.isBurst = isBurst;
-                this.x = isBurst ? burstX : Math.random() * canvas.width;
-                this.y = isBurst ? burstY : -20;
-                this.size = Math.random() * 8 + 4;
-                this.speedX = isBurst ? (Math.random() - 0.5) * 10 : Math.random() * 1.5 - 0.75;
-                this.speedY = isBurst ? (Math.random() - 0.5) * 10 : Math.random() * 1.5 + 1;
-                this.rotation = Math.random() * Math.PI;
-                this.rotationSpeed = Math.random() * 0.03 - 0.015;
-                this.opacity = 1;
-                this.colorType = Math.random() > 0.45 ? 'heart' : 'sakura';
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2.5 + 0.5;
+                this.speedX = Math.random() * 0.4 - 0.2;
+                this.speedY = Math.random() * -0.5 - 0.2;
+                this.color = `rgba(${230 + Math.random()*25}, ${100 + Math.random()*50}, ${140 + Math.random()*50}, ${Math.random() * 0.4 + 0.2})`;
             }
-
-            draw() {
-                ctx.save();
-                ctx.translate(this.x, this.y);
-                ctx.rotate(this.rotation);
-                ctx.globalAlpha = this.opacity;
-
-                if (this.colorType === 'heart') {
-                    // Menggambar bentuk hati presisi
-                    ctx.fillStyle = '#f43f5e';
-                    ctx.beginPath();
-                    ctx.moveTo(0, 0);
-                    ctx.bezierCurveTo(-this.size/2, -this.size/2, -this.size, 0, 0, this.size);
-                    ctx.bezierCurveTo(this.size, 0, this.size/2, -this.size/2, 0, 0);
-                    ctx.fill();
-                } else {
-                    // Menggambar kelopak sakura merah muda
-                    ctx.fillStyle = '#fbcfe8';
-                    ctx.beginPath();
-                    ctx.ellipse(0, 0, this.size/2, this.size, 0, 0, 2 * Math.PI);
-                    ctx.fill();
-                }
-                ctx.restore();
-            }
-
             update() {
                 this.x += this.speedX;
                 this.y += this.speedY;
-                this.rotation += this.rotationSpeed;
-                if (this.isBurst) {
-                    this.opacity -= 0.015; // Lebih cepat memudar
+                if (this.y < 0) {
+                    this.y = canvas.height;
+                    this.x = Math.random() * canvas.width;
                 }
+            }
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
             }
         }
 
-        // Loop Animasi Partikel Latar Belakang
-        function animateParticles() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            if (Math.random() < 0.08 && particles.length < 120) {
+        function initParticles() {
+            particles = [];
+            for (let i = 0; i < 75; i++) {
                 particles.push(new Particle());
             }
+        }
+        initParticles();
 
-            for (let i = particles.length - 1; i >= 0; i--) {
-                let p = particles[i];
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
                 p.update();
                 p.draw();
-
-                if (p.y > canvas.height + 20 || p.opacity <= 0) {
-                    particles.splice(i, 1);
-                }
-            }
+            });
             requestAnimationFrame(animateParticles);
         }
         animateParticles();
 
-        // Ledakan hati instan (konfeti) saat interaksi penting terjadi
-        function triggerBurst(x, y, count = 35) {
-            for (let i = 0; i < count; i++) {
-                particles.push(new Particle(true, x, y));
-            }
-        }
+        // Buka Kado & Mainkan Musik
+        function openGift() {
+            const music = document.getElementById('romanticMusic');
+            music.play().catch(e => console.log("Izin audio diperlukan"));
 
-        // --- 3. PERSONALISASI ONBOARDING & FLOW ---
-        let sender = "Aku";
-        let receiver = "Kamu";
-
-        function saveNamesAndGo() {
-            const senderVal = document.getElementById('senderName').value.trim();
-            const receiverVal = document.getElementById('receiverName').value.trim();
-
-            if (senderVal !== "") sender = senderVal;
-            if (receiverVal !== "") receiver = receiverVal;
-
-            // Masukkan variabel ke seluruh elemen berkelas dinamis
-            document.querySelectorAll('.partner-name').forEach(el => {
-                el.innerText = receiver;
-            });
-
-            // Sembunyikan Onboarding, Tampilkan Intro Kado
-            document.getElementById('onboardingPage').classList.add('opacity-0', 'scale-75');
+            document.getElementById('introPage').classList.add('scale-50', 'opacity-0');
             setTimeout(() => {
-                document.getElementById('onboardingPage').style.display = 'none';
-                const intro = document.getElementById('introPage');
-                intro.style.display = 'flex';
-                // Trigger reflow & fade-in
-                setTimeout(() => {
-                    intro.classList.add('opacity-100', 'scale-100');
-                }, 50);
-            }, 1000);
-        }
-
-        // Pembukaan Kotak Kado
-        const giftBox = document.getElementById('giftBox');
-        giftBox.addEventListener('click', function() {
-            initAudio();
-            playChime(523.25, audioCtx.currentTime, 1.0); // Nada C5
-            setTimeout(() => playChime(659.25, audioCtx.currentTime, 1.5), 120); // Nada E5
-            setTimeout(() => playChime(783.99, audioCtx.currentTime, 2.0), 240); // Nada G5
-
-            const rect = giftBox.getBoundingClientRect();
-            triggerBurst(rect.left + rect.width / 2, rect.top + rect.height / 2, 80);
-
-            document.getElementById('introPage').classList.add('opacity-0', 'scale-75');
-            setTimeout(() => {
-                document.getElementById('introPage').style.display = 'none';
-                document.getElementById('mainPage').style.display = 'block';
+                document.getElementById('introPage').classList.add('hidden');
+                document.getElementById('mainPage').classList.remove('hidden');
                 document.getElementById('musicController').classList.remove('hidden');
-                
-                startMusicBox();
-                startTypingEffects();
-            }, 1000);
-        });
+                startTypingEffect();
+            }, 500);
+        }
 
-        // Controller Musik
-        const playMusicBtn = document.getElementById('playMusicBtn');
+        // Kontrol Musik Mandiri
+        const musicCtrl = document.getElementById('musicController');
+        const music = document.getElementById('romanticMusic');
         const musicIcon = document.getElementById('musicIcon');
-        playMusicBtn.addEventListener('click', () => {
-            if (isMusicPlaying) {
-                stopMusicBox();
-                musicIcon.classList.remove('animate-bounce');
-                musicIcon.className = 'fas fa-volume-mute text-sm';
+        
+        musicCtrl.addEventListener('click', () => {
+            if (music.paused) {
+                music.play();
+                musicIcon.className = "fas fa-music text-sm animate-bounce";
             } else {
-                startMusicBox();
-                musicIcon.classList.add('animate-bounce');
-                musicIcon.className = 'fas fa-music text-sm';
+                music.pause();
+                musicIcon.className = "fas fa-play text-sm";
             }
         });
 
-        // Efek Mengetik Otomatis (Typewriter)
-        function typeWriter(elementId, text, speed, callback) {
-            let i = 0;
-            let element = document.getElementById(elementId);
-            element.innerHTML = '';
+        // Efek Mengetik Teks Romantis
+        function startTypingEffect() {
+            const titleTarget = document.getElementById('typingTitle');
+            const textTarget = document.getElementById('typingText');
             
-            function type() {
-                if (i < text.length) {
-                    element.innerHTML += text.charAt(i);
-                    i++;
-                    if (Math.random() < 0.25 && audioCtx) {
-                        playChime(1300 + Math.random() * 300, audioCtx.currentTime, 0.04);
-                    }
-                    setTimeout(type, speed);
-                } else if (callback) {
-                    callback();
+            const titleText = "Teruntuk Bububku Tersayang... ✨";
+            const bodyText = "Aku hanya ingin bilang kalau kehadiranmu di hidupku adalah hadiah terindah dari semesta. Kamu adalah alasan di balik senyumku setiap hari.";
+
+            let titleIdx = 0;
+            let bodyIdx = 0;
+
+            function typeTitle() {
+                if (titleIdx < titleText.length) {
+                    titleTarget.innerHTML += titleText.charAt(titleIdx);
+                    titleIdx++;
+                    setTimeout(typeTitle, 80);
+                } else {
+                    setTimeout(typeBody, 500);
                 }
             }
-            type();
+
+            function typeBody() {
+                if (bodyIdx < bodyText.length) {
+                    textTarget.innerHTML += bodyText.charAt(bodyIdx);
+                    bodyIdx++;
+                    setTimeout(typeBody, 500); // Kecepatan lambat agar mudah diresapi
+                }
+            }
+
+            typeTitle();
         }
 
-        function startTypingEffects() {
-            typeWriter('typingTitle', `Untukmu, Semestaku ${receiver} ✨`, 90, () => {
-                setTimeout(() => {
-                    const story = `Terima kasih ya sudah lahir ke dunia ini dan menghiasi takdir hidupku dengan kehadiranmu yang begitu indah. Di setiap embusan napas dan untaian detik bersamamu, aku selalu menemukan beribu alasan baru untuk jatuh hati lagi... Tertanda, ${sender}.`;
-                    typeWriter('typingText', story, 40);
-                }, 400);
-            });
-        }
-
-        // --- 4. GAME INTERAKTIF FLIP CARDS ---
+        // Balik Kartu Alasan Cinta
         function toggleFlip(card) {
             card.classList.toggle('flipped');
-            if (audioCtx) {
-                playChime(880, audioCtx.currentTime, 0.25);
-            }
         }
 
-        // --- 5. SWIPE POLAROID DENGAN GESTUR SENTUH MOBILE ---
-        let touchStartX = 0;
-        let touchEndX = 0;
-
-        function swipePolaroid(card) {
-            if (card.classList.contains('swiping')) return;
-            card.classList.add('swiping');
-            
-            if (audioCtx) {
-                playChime(620, audioCtx.currentTime, 0.3);
-            }
-
-            // Animasi meluncur keluar layar lalu ditaruh di paling dasar tumpukan
-            card.style.transform = 'translateX(260px) rotate(25deg) scale(0.9)';
-            card.style.opacity = '0';
-            card.style.zIndex = '5';
-
-            setTimeout(() => {
-                const parent = card.parentNode;
-                parent.insertBefore(card, parent.firstChild);
-                
-                card.style.transform = 'translateX(0) rotate(' + (Math.random() * 8 - 4) + 'deg) scale(1)';
-                card.style.opacity = '1';
-                card.classList.remove('swiping');
-                
-                // Urutkan kembali z-index polaroid
-                const cards = parent.querySelectorAll('.polaroid-card');
-                cards.forEach((c, idx) => {
-                    c.style.zIndex = (idx + 1) * 10;
-                });
-            }, 550);
-        }
-
-        // Mendeteksi sapuan jari pada polaroid agar adaptif terhadap mobile
-        const polaroidContainer = document.getElementById('polaroidContainer');
-        polaroidContainer.addEventListener('touchstart', (e) => {
-            touchStartX = e.changedTouches[0].screenX;
-        }, {passive: true});
-
-        polaroidContainer.addEventListener('touchend', (e) => {
-            touchEndX = e.changedTouches[0].screenX;
-            handleSwipe();
-        }, {passive: true});
-
-        function handleSwipe() {
-            if (Math.abs(touchStartX - touchEndX) > 50) {
-                // Cari polaroid di z-index tertinggi (paling atas)
-                const cards = Array.from(document.querySelectorAll('.polaroid-card'));
-                if (cards.length > 0) {
-                    const topCard = cards.reduce((prev, current) => {
-                        return (parseInt(prev.style.zIndex || 0) > parseInt(current.style.zIndex || 0)) ? prev : current;
-                    });
-                    swipePolaroid(topCard);
-                }
-            }
-        }
-
-        // --- 6. LOVE TIMELINE SLIDER LOGIC ---
-        const timelineData = [
-            {
-                icon: '<i class="fas fa-star-and-crescent"></i>',
-                title: 'Awal Cerita Kita',
-                desc: '"Semesta punya cara yang tidak terduga untuk mempertemukan kita. Saat pertama kali mengenalmu, ada getaran hangat yang membisikkan bahwa kamulah pelengkap jiwaku."'
-            },
-            {
-                icon: '<i class="fas fa-hand-holding-heart"></i>',
-                title: 'Masa Penuh Tawa',
-                desc: '"Setiap kebersamaan kita terpatri menjadi kenangan manis. Obrolan sederhana di malam hari, candaan garing kita, hingga dukunganmu yang tiada henti adalah anugerah terbesar."'
-            },
-            {
-                icon: '<i class="fas fa-ring"></i>',
-                title: 'Komitmen Masa Depan',
-                desc: '"Aku ingin melangkah bersamamu menembus masa depan. Melewati badai dan menikmati pelangi bersama-sama. Aku berjanji akan menjagamu segenap ragaku."'
-            }
-        ];
-
-        let currentTimelineIdx = 0;
-
-        function updateTimelineUI() {
-            const current = timelineData[currentTimelineIdx];
+        // Navigasi Alur Cerita
+        function updateTimeline() {
             const container = document.getElementById('timelineContainer');
-            
-            container.style.opacity = '0';
-            container.style.transform = 'translateY(10px)';
-            
+            const icon = document.getElementById('timelineIcon');
+            const title = document.getElementById('timelineTitle');
+            const desc = document.getElementById('timelineDesc');
+            const dots = document.getElementById('timelineDots').children;
+
+            container.classList.add('opacity-0', 'translate-x-4');
+
             setTimeout(() => {
-                document.getElementById('timelineIcon').innerHTML = current.icon;
-                document.getElementById('timelineTitle').innerText = current.title;
-                document.getElementById('timelineDesc').innerText = current.desc;
-                
-                // Update dots indicator
-                const dotsContainer = document.getElementById('timelineDots');
-                dotsContainer.innerHTML = '';
-                timelineData.forEach((_, idx) => {
-                    const isActive = idx === currentTimelineIdx;
-                    const dot = document.createElement('span');
-                    dot.className = `w-2.5 h-2.5 rounded-full transition-all duration-300 ${isActive ? 'bg-rose-500 scale-125 shadow-md shadow-rose-500/50' : 'bg-rose-500/20'}`;
-                    dotsContainer.appendChild(dot);
-                });
+                const currentData = timelineData[currentTimelineIndex];
+                icon.innerHTML = currentData.icon;
+                title.innerText = currentData.title;
+                desc.innerText = currentData.desc;
 
-                container.style.opacity = '1';
-                container.style.transform = 'translateY(0)';
+                for (let i = 0; i < dots.length; i++) {
+                    if (i === currentTimelineIndex) {
+                        dots[i].className = "w-3 h-3 rounded-full bg-rose-500 transition-all duration-300 shadow-[0_0_8px_#f43f5e]";
+                    } else {
+                        dots[i].className = "w-3 h-3 rounded-full bg-rose-500/20 transition-all duration-300";
+                    }
+                }
+
+                container.classList.remove('opacity-0', 'translate-x-4');
             }, 300);
-
-            if (audioCtx) {
-                playChime(700 + currentTimelineIdx * 100, audioCtx.currentTime, 0.25);
-            }
         }
 
         function nextTimeline() {
-            currentTimelineIdx = (currentTimelineIdx + 1) % timelineData.length;
-            updateTimelineUI();
+            currentTimelineIndex = (currentTimelineIndex + 1) % timelineData.length;
+            updateTimeline();
         }
 
         function prevTimeline() {
-            currentTimelineIdx = (currentTimelineIdx - 1 + timelineData.length) % timelineData.length;
-            updateTimelineUI();
+            currentTimelineIndex = (currentTimelineIndex - 1 + timelineData.length) % timelineData.length;
+            updateTimeline();
         }
 
-        // --- 7. MENYIRAM TAMAN BUNGA ---
-        let waterClickCount = 0;
+        // Siram Pot Bunga Interaktif
+        let waterCount = 0;
         function waterPlants() {
-            const waterDrops = document.getElementById('waterDrops');
-            const wateringCan = document.getElementById('wateringCan');
-            const gardenStatus = document.getElementById('gardenStatus');
+            const drops = document.getElementById('waterDrops');
+            const status = document.getElementById('gardenStatus');
             
-            wateringCan.classList.add('rotate-[-25deg]');
-            waterDrops.classList.remove('hidden');
-
-            if (audioCtx) {
-                for (let i = 0; i < 5; i++) {
-                    setTimeout(() => {
-                        playChime(1100 + i * 120, audioCtx.currentTime, 0.12);
-                    }, i * 80);
-                }
-            }
-
-            waterClickCount++;
-
+            drops.classList.remove('hidden');
+            
             setTimeout(() => {
-                wateringCan.classList.remove('rotate-[-25deg]');
-                waterDrops.classList.add('hidden');
-                
-                // Tumbuh Bertahap
-                if (waterClickCount === 1) {
-                    document.getElementById('flower1').style.height = '120px';
-                    gardenStatus.innerText = 'Tunas Mawar cinta kita merekah manis! 🌱';
-                    triggerBurst(window.innerWidth/2, window.innerHeight/2 + 50, 15);
-                } else if (waterClickCount === 2) {
-                    document.getElementById('flower2').style.height = '120px';
-                    gardenStatus.innerText = 'Bunga Matahari keceriaan ikut mengembang ☀️';
-                    triggerBurst(window.innerWidth/2, window.innerHeight/2 + 50, 15);
-                } else if (waterClickCount >= 3) {
-                    document.getElementById('flower3').style.height = '120px';
-                    gardenStatus.innerText = `Wah! Taman kita berbunga penuh berkat ketulusanmu ${receiver}! 🌸✨`;
-                    triggerBurst(window.innerWidth/2, window.innerHeight/2 + 50, 45);
+                drops.classList.add('hidden');
+                waterCount++;
+
+                if (waterCount === 1) {
+                    document.getElementById('flower1').classList.replace('h-0', 'h-24');
+                    status.innerText = "Benih mawar cinta mulai tumbuh bersemi... 🌱";
+                } else if (waterCount === 2) {
+                    document.getElementById('flower2').classList.replace('h-0', 'h-24');
+                    status.innerText = "Bunga matahari yang cerah mekar dengan indah... 🌻";
+                } else if (waterCount === 3) {
+                    document.getElementById('flower3').classList.replace('h-0', 'h-24');
+                    status.innerText = "Luar biasa! Taman cinta kita kini penuh warna kebahagiaan! 🌸✨";
+                    createFloatingHearts();
                 }
-            }, 1000);
+            }, 800);
         }
 
-        // --- 8. WISHING WELL (KOTAK HARAPAN) ---
+        // Kirim Kotak Harapan
         function throwWish() {
             const input = document.getElementById('wishingText');
             const status = document.getElementById('wishStatus');
-            
-            if (input.value.trim() === '') {
-                // Ganti dari alert() dengan goyangan visual
-                input.classList.add('border-rose-500', 'animate-shake');
-                setTimeout(() => input.classList.remove('border-rose-500', 'animate-shake'), 1000);
-                return;
+
+            if (input.value.trim() !== "") {
+                status.classList.remove('hidden');
+                input.value = "";
+                createFloatingHearts();
             }
+        }
 
-            // Sintesis suara koin terjatuh ke dalam air (pitch menurun lembut)
-            if (audioCtx) {
-                playChime(900, audioCtx.currentTime, 0.1);
-                setTimeout(() => playChime(600, audioCtx.currentTime, 0.2), 100);
-                setTimeout(() => playChime(400, audioCtx.currentTime, 0.4), 250);
-            }
-
-            // Kembang api partikel berskala besar
-            triggerBurst(window.innerWidth / 2, window.innerHeight / 2, 70);
-
-            status.classList.remove('hidden');
-            input.value = '';
-
+        // Efek Geser/Sentuh Polaroid Card
+        function swipePolaroid(card) {
+            card.classList.add('translate-x-full', 'rotate-12', 'opacity-0');
             setTimeout(() => {
-                status.classList.add('hidden');
-            }, 5000);
-        }
-
-        // --- 9. DETAK CINTA KLIKER & PENCAPAIAN ---
-        function clickHeart() {
-            heartRateCount++;
-            document.getElementById('loveCounter').innerText = heartRateCount;
-            
-            const heartBtn = document.getElementById('heartClicker');
-            heartBtn.classList.add('scale-90');
-            setTimeout(() => heartBtn.classList.remove('scale-90'), 80);
-
-            // Pitch suara dinamis sesuai ketukan cinta
-            if (audioCtx) {
-                playChime(320 + (heartRateCount * 5), audioCtx.currentTime, 0.4);
-            }
-
-            const rect = heartBtn.getBoundingClientRect();
-            triggerBurst(rect.left + rect.width / 2, rect.top + rect.height / 2, 12);
-
-            // Deteksi Milestone Cinta & Popup Menarik
-            checkMilestone(heartRateCount);
-        }
-
-        function checkMilestone(count) {
-            const popup = document.getElementById('milestonePopup');
-            const text = document.getElementById('milestoneText');
-            let message = "";
-
-            if (count === 10) {
-                message = "Cinta Hangat Terkirim! 💖";
-            } else if (count === 25) {
-                message = "Detak jantung kita beresonansi selaras! 💞";
-            } else if (count === 50) {
-                message = "Dunia serasa milik kita berdua saja! 🌌";
-            } else if (count === 100) {
-                message = "Cinta tanpa batas tak berujung terlampaui! 🚀✨";
-            }
-
-            if (message !== "") {
-                text.innerHTML = `<strong>${count} Detak:</strong> ${message}`;
-                popup.classList.remove('hidden', 'opacity-0', 'scale-95');
-                popup.classList.add('opacity-100', 'scale-100');
+                const container = document.getElementById('polaroidContainer');
+                card.classList.remove('translate-x-full', 'rotate-12', 'opacity-0');
+                container.insertBefore(card, container.firstChild);
                 
-                if (audioCtx) {
-                    playChime(987.77, audioCtx.currentTime, 0.3); // Denting sukses gembira
-                    setTimeout(() => playChime(1318.51, audioCtx.currentTime, 0.5), 100);
+                // Tata ulang z-index semua kartu polaroid
+                const cards = container.getElementsByClassName('polaroid-card');
+                for(let i = 0; i < cards.length; i++) {
+                    cards[i].style.zIndex = i + 1;
                 }
+            }, 400);
+        }
 
+        // Tombol Menolak yang Selalu Berpindah Posisi
+        function moveButton() {
+            const btn = document.getElementById('moveBtn');
+            const x = Math.random() * (window.innerWidth - btn.offsetWidth - 40);
+            const y = Math.random() * (window.innerHeight - btn.offsetHeight - 40);
+            
+            btn.style.position = 'fixed';
+            btn.style.left = `${Math.max(20, x)}px`;
+            btn.style.top = `${Math.max(20, y)}px`;
+        }
+
+        // Terima Pernyataan Cinta
+        function acceptLove() {
+            createFloatingHearts();
+            alert("Terima kasih banyak ya Sayang! ❤️ Aku berjanji akan menjagamu dan mencintaimu dengan sepenuh hatiku! (nadippp)");
+            
+            setInterval(() => {
+                createFloatingHearts();
+            }, 300);
+        }
+
+        // Animasi Hati Berterbangan
+        function createFloatingHearts() {
+            const container = document.getElementById('heartContainer');
+            for (let i = 0; i < 15; i++) {
+                const heart = document.createElement('i');
+                heart.className = "fas fa-heart floating-heart text-rose-500/80";
+                heart.style.left = Math.random() * 100 + "vw";
+                heart.style.animationDelay = Math.random() * 0.5 + "s";
+                heart.style.fontSize = Math.random() * 20 + 10 + "px";
+                container.appendChild(heart);
+                
                 setTimeout(() => {
-                    popup.classList.add('opacity-0', 'scale-95');
-                    setTimeout(() => popup.classList.add('hidden'), 500);
+                    heart.remove();
                 }, 4000);
             }
         }
